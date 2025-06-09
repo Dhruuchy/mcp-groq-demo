@@ -1,10 +1,9 @@
-# agent.py
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 
-# Import the tools we defined
-from tools import list_all_users, get_user_details, add_new_user, greet_user
+# Tool Imports
+from tools import list_all_users, get_user_details, add_new_user, greet_user, update_user_details, delete_user
 
 
 def create_agent_executor():
@@ -12,23 +11,24 @@ def create_agent_executor():
     Creates the agent by binding the LLM to the tools and creating the executor.
     """
     # 1. Define the list of tools the agent can use
-    tools = [list_all_users, get_user_details, add_new_user, greet_user]
+    tools = [list_all_users, get_user_details, add_new_user, greet_user, update_user_details, delete_user]
 
-    # We are creating a generic prompt template that is not tied to a specific
-    # model like OpenAI. LangChain will adapt this for Groq's Llama 3.
     prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                "You are a helpful assistant that can manage a user database.\n"
-                "1. Your first priority is to understand the user's goal.\n"
-                "2. Look at your tools and see if one can help.\n"
-                "3. If the user wants to use a tool but has NOT provided all the "
-                "necessary information (like a name or email), you MUST ask for "
-                "the missing information first.\n"
-                "4. Do NOT attempt to call a tool with incomplete information.\n"
-                "5. Only after you have all the required arguments should you "
-                "call the tool.",
+                "You are a database assistant. Your most important task is to "
+                "distinguish between creating a NEW user and updating an "
+                "EXISTING one.\n\n"
+                "RULES:\n"
+                "1. If the user's query contains words like 'update', 'modify', "
+                "'change', or 'edit', you MUST use the `update_user_details` tool.\n"
+                "2. Under these circumstances (update, modify, change, edit), "
+                "you are FORBIDDEN from using the `add_new_user` tool.\n"
+                "3. If you need more information to use a tool (like an email "
+                "address), you MUST ask the user for it.\n"
+                "4. Do not make up answers. If a tool fails, report the error "
+                "and stop.",
             ),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
@@ -44,7 +44,7 @@ def create_agent_executor():
 
     # 5. Create the Agent Executor, which is the runtime for the agent.
     agent_executor = AgentExecutor(
-        agent=agent, tools=tools, verbose=False
+        agent=agent, tools=tools, verbose=True
     )  # verbose=True lets us see the agent's thoughts
 
     return agent_executor
