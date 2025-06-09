@@ -48,10 +48,24 @@ A demonstration of a powerful AI agent built using **Model-Centric Programming (
 
 2. **Clone the Repository:**  
      ```sh
-     git clone <repo-url>
+     git clone https://github.com/fioravante-dev/mcp-groq-demo
      cd mcp-groq-demo
      ```
 
+3. **Create a Virtual Environment and activate it:**  
+     ```sh
+    python -m venv .venv
+    .venv\Scripts\activate
+    ```
+4. **Install Dependencies:**  
+     ```sh
+     pip install -r requirements.txt
+     ```
+5. **Set Up Environment Variables:**
+     Create a `.env` file in the project root with your Groq API key:
+     ```plaintext
+    GROQ_API_KEY=your_groq_api_key_here
+    ```
 ---
 
 ## 💬 Example Conversation
@@ -105,3 +119,4 @@ mcp-groq-demo
 ├── agent.py           # AI agent and system prompt configuration
 └── main.py            # Main application entrypoint and CLI
 ```
+Made with ❤️ by Pedro Fioravante
